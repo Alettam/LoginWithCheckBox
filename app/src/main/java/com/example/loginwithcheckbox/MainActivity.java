@@ -178,6 +178,6 @@ public class MainActivity extends AppCompatActivity {
 
 
     private boolean checkData() {
-        return !TextUtils.isEmpty(loginEdTxt.getText().toString()) && !TextUtils.isEmpty(passwordEdTxt.getText().toString());
+        return !TextUtils.isEmpty(loginEdTxt.getText().toString()) || !TextUtils.isEmpty(passwordEdTxt.getText().toString());
     }
 }
