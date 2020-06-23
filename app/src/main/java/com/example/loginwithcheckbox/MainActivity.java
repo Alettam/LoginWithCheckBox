@@ -15,7 +15,6 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -99,21 +98,11 @@ public class MainActivity extends AppCompatActivity {
 
     private void saveExternalFile(String login, String password) {
         file = new File(getExternalFilesDir(null), STORAGE_FILE);
-        BufferedWriter writer = null;
-        try {
-            writer = new BufferedWriter(new FileWriter(file));
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))){
             writer.write(login + ";" + password);
             writer.write("\n");
         } catch (IOException e) {
             e.printStackTrace();
-        } finally {
-            if (writer != null) {
-                try {
-                    writer.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
         }
     }
 
@@ -135,8 +124,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private boolean readExternalFile(String login, String password) {
-        try {
-            BufferedReader reader = new BufferedReader(new FileReader(file));
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))){
             try {
                 String line = reader.readLine();
                 while (line != null) {
@@ -148,18 +136,16 @@ public class MainActivity extends AppCompatActivity {
                 e.printStackTrace();
                 return false;
             }
-
-        } catch (FileNotFoundException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
         return false;
     }
 
     private boolean readFile(String fileName, String login, String password) {
-        try {
-            FileInputStream fileInputStream = openFileInput(fileName);
+        try(FileInputStream fileInputStream = openFileInput(fileName);
             InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);
-            BufferedReader reader = new BufferedReader(inputStreamReader);
+            BufferedReader reader = new BufferedReader(inputStreamReader)) {
             try {
                 String line = reader.readLine();
                 while (line != null) {
@@ -167,12 +153,11 @@ public class MainActivity extends AppCompatActivity {
                     Log.d("Tag", line);
                     return (data[0].equals(login) && data[1].equals(password));
                 }
-
             } catch (IOException e) {
                 e.printStackTrace();
                 return false;
             }
-        } catch (FileNotFoundException e) {
+        } catch (IOException e) {
             e.printStackTrace();
             return false;
         }
@@ -181,17 +166,11 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void saveFile(String fileName, String login, String password) {
-        try {
-            FileOutputStream fileOutputStream = openFileOutput(fileName, MODE_PRIVATE);
-            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(fileOutputStream);
-            BufferedWriter bw = new BufferedWriter(outputStreamWriter);
-            try {
-                bw.write(login + ";" + password);
-                bw.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        } catch (FileNotFoundException e) {
+        try (FileOutputStream fileOutputStream = openFileOutput(fileName, MODE_PRIVATE);
+             OutputStreamWriter outputStreamWriter = new OutputStreamWriter(fileOutputStream);
+             BufferedWriter bw = new BufferedWriter(outputStreamWriter)) {
+            bw.write(login + ";" + password);
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
