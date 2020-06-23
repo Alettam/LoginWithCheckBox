@@ -31,6 +31,8 @@ public class MainActivity extends AppCompatActivity {
     private CheckBox checkBox;
     private EditText loginEdTxt;
     private EditText passwordEdTxt;
+    private String login;
+    private String password;
 
     private static String STORAGE_FILE = "storage_file.txt";
     private File file;
@@ -90,9 +92,9 @@ public class MainActivity extends AppCompatActivity {
 
     private void registrationIn() {
         if (checkBox.isChecked()) {
-            saveExternalFile(loginEdTxt.getText().toString(), passwordEdTxt.getText().toString());
+            saveExternalFile(login, password);
         } else {
-            saveFile("login", loginEdTxt.getText().toString(), passwordEdTxt.getText().toString());
+            saveFile("login", login, password);
         }
     }
 
@@ -108,13 +110,13 @@ public class MainActivity extends AppCompatActivity {
 
     private void singIn() {
         if (checkBox.isChecked()) {
-            if(readExternalFile(loginEdTxt.getText().toString(), passwordEdTxt.getText().toString())){
+            if(readExternalFile(login, password)){
                 Toast.makeText(MainActivity.this, "Вход выполнен", Toast.LENGTH_LONG).show();
             }else {
                 Toast.makeText(MainActivity.this, "Введены неправильный логин или пароль", Toast.LENGTH_LONG).show();
             }
         } else {
-            if (readFile("login", loginEdTxt.getText().toString(), passwordEdTxt.getText().toString())) {
+            if (readFile("login", login, password)) {
                 Toast.makeText(MainActivity.this, "Вход выполнен", Toast.LENGTH_LONG).show();
             } else {
                 Toast.makeText(MainActivity.this, "Введены неправильный логин или пароль", Toast.LENGTH_LONG).show();
@@ -148,11 +150,9 @@ public class MainActivity extends AppCompatActivity {
             BufferedReader reader = new BufferedReader(inputStreamReader)) {
             try {
                 String line = reader.readLine();
-                while (line != null) {
-                    String [] data = line.split(";");
-                    Log.d("Tag", line);
-                    return (data[0].equals(login) && data[1].equals(password));
-                }
+                String[] data = line.split(";");
+                Log.d("Tag", line);
+                return (data[0].equals(login) && data[1].equals(password));
             } catch (IOException e) {
                 e.printStackTrace();
                 return false;
@@ -161,7 +161,6 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
             return false;
         }
-        return false;
     }
 
 
@@ -178,6 +177,8 @@ public class MainActivity extends AppCompatActivity {
 
 
     private boolean checkData() {
-        return !TextUtils.isEmpty(loginEdTxt.getText().toString()) || !TextUtils.isEmpty(passwordEdTxt.getText().toString());
+        login = loginEdTxt.getText().toString();
+        password = passwordEdTxt.getText().toString();
+        return !TextUtils.isEmpty(login) && !TextUtils.isEmpty(password);
     }
 }
